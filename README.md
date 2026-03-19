@@ -42,7 +42,7 @@ pnpm dev
 
 ## About
 
-This is a for-fun project — not production software. The entire thing was designed and implemented using [Spec Kit](https://github.com/spec-kit/specify), an AI-powered specification-driven development workflow. Each feature went through the full cycle: `/speckit.specify` -> `/speckit.plan` -> `/speckit.tasks` -> `/speckit.implement`. You can find all the specs, plans, and task breakdowns in the `specs/` directory.
+**THIS IS A FOR-FUN PROJECT** — not production software. The entire thing was designed and implemented using [Spec Kit](https://github.com/spec-kit/specify), an AI-powered specification-driven development workflow. Each feature went through the full cycle: `/speckit.specify` -> `/speckit.plan` -> `/speckit.tasks` -> `/speckit.implement`. You can find all the specs, plans, and task breakdowns in the `specs/` directory.
 
 ## License
 
