@@ -2,6 +2,8 @@
 
 An LLM-powered learning platform where you chat with an AI assistant to generate structured lesson plans on any topic. Built as a side project to explore AI-assisted education and experiment with [Spec Kit](https://github.com/spec-kit/specify) as a development workflow.
 
+<img width="1895" height="916" alt="image" src="https://github.com/user-attachments/assets/3617a388-18f0-4beb-9a5a-b91d3f55f1da" />
+
 ## What it does
 
 - **Chat to learn** — Ask the AI to teach you any subject. It generates structured, multi-section lesson plans with proper headings, subsections, and markdown formatting.
