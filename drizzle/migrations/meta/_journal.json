@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1773904189698,
+      "tag": "0001_hierarchical_lesson_schema",
+      "breakpoints": true
+    }
+  ]
+}

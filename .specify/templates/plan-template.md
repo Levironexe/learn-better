@@ -96,9 +96,9 @@ directories captured above]
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
+> **Fill for any Constitution Check violations that must be tracked as known technical debt**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| Concern | Why Accepted | Mitigation / Remediation Plan |
+|---------|-------------|-------------------------------|
+| [e.g., skipped rate limiting on endpoint X] | [time constraint / low-risk surface] | [ticket to add before GA] |
+| [e.g., no integration test for service Y] | [external dep not mockable yet] | [add test once test env available] |

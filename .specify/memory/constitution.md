@@ -1,50 +1,85 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+  SYNC IMPACT REPORT
+  Version change: 1.0.0 → 2.0.0 (MAJOR: all three core principles redefined;
+    development scope fundamentally reversed from recreational to production-grade)
+  Modified principles:
+    I. "Simplicity First" → "Production Quality"
+    II. "It Must Work" → "Scalability by Design"
+    III. "No Production Concerns" → "Industry Best Practices"
+  Removed sections: "No Production Concerns" (concept eliminated entirely)
+  Added sections: updated Development Scope (production requirements now explicit)
+  Templates requiring updates:
+    ✅ .specify/memory/constitution.md — this file
+    ✅ .specify/templates/tasks-template.md — updated "Tests are OPTIONAL" → REQUIRED per constitution
+    ✅ .specify/templates/plan-template.md — updated Complexity Tracking note to reflect new context
+    ✅ .specify/templates/spec-template.md — no structural changes required; success criteria examples
+       already reference production metrics (concurrency, latency)
+  Follow-up TODOs: none
+-->
+
+# learn-better Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Production Quality
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+Every feature MUST be production-grade.
+Proper error handling, structured logging, input validation at system boundaries,
+and defensive coding are non-negotiable — not optional polish.
+Visual and UX quality MUST meet the same bar as functional correctness.
+Code that works locally but is fragile, unobservable, or insecure is
+considered incomplete.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Scalability by Design
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+Architecture MUST anticipate growth from the first implementation.
+Data models, API contracts, caching strategies, and infrastructure decisions
+MUST support horizontal scaling without requiring structural rewrites.
+Shortcuts that create scale ceilings (e.g., in-process state, synchronous
+fan-out, unindexed queries) MUST be explicitly justified and tracked as
+known technical debt.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### III. Industry Best Practices
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+Code MUST follow established software engineering standards:
+clean architecture, separation of concerns, and SOLID principles where applicable.
+Security, observability, and operational readiness are first-class concerns,
+not afterthoughts.
+Authentication, authorization, rate limiting, and input sanitization MUST
+be implemented for any feature that exposes user-facing or data-modifying surfaces.
+Meaningful test coverage (unit tests for business logic, integration tests for
+critical paths) is REQUIRED — not optional.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Development Scope
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+This is a production-grade Next.js 15 web application. All work MUST meet
+production readiness standards:
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- **Authentication & Authorization**: REQUIRED for any user-facing or
+  data-modifying surface
+- **Security**: Input validation, output encoding, rate limiting, and secure
+  defaults are IN SCOPE and non-negotiable
+- **Observability**: Structured logging and error tracking MUST be in place
+  before a feature is considered done
+- **Testing**: Unit tests for business logic and integration tests for critical
+  paths are REQUIRED; end-to-end tests are recommended for P1 user stories
+- **Deployment readiness**: Code MUST be deployable to a production environment;
+  CI/CD pipeline configuration is expected
+- **External integrations**: MUST follow vendor best practices and include
+  appropriate error handling, retries, and circuit-breaking where applicable
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other project practices.
+Amendments MUST be reviewed against all dependent templates and artifacts
+before ratification. Any change that contradicts an active principle requires
+a MAJOR version bump and explicit justification.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Versioning policy:
+
+- **MAJOR**: Removal, replacement, or backward-incompatible redefinition of
+  an existing principle
+- **MINOR**: New principle or section added, or materially expanded guidance
+- **PATCH**: Clarifications, wording fixes, or non-semantic refinements
+
+**Version**: 2.0.0 | **Ratified**: 2026-03-18 | **Last Amended**: 2026-03-19
