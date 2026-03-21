@@ -16,6 +16,7 @@ import {
   SYSTEM_PROMPT,
 } from '@/lib/ai/index'
 import { createBraveSearchTools } from '@/lib/ai/mcp'
+import { getToolStatusLabel } from '@/lib/ai/tool-status'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db/index'
 import { lesson_plans, lesson_sections, chat_messages } from '@/lib/db/schema'
@@ -49,13 +50,22 @@ export async function POST(req: Request) {
 
   const stream = createUIMessageStream<UIMessage<never, LessonPlanDataParts>>({
     execute: async ({ writer }) => {
+      const emitStatus = (tool: string, status: 'running' | 'complete') => {
+        writer.write({
+          type: 'data-tool-status',
+          data: { tool, status, label: getToolStatusLabel(tool) },
+        })
+      }
+
       // Phase 1: Intent detection
+      emitStatus('classify_intent', 'running')
       const { object: { intent } } = await generateObject({
         model: anthropic('claude-haiku-4-5'),
         schema: IntentSchema,
         system: INTENT_SYSTEM_PROMPT,
         messages: modelMessages,
       })
+      emitStatus('classify_intent', 'complete')
 
       // Phase 2: Lesson generation (create_lesson or edit_lesson)
       if (intent === 'create_lesson' || intent === 'edit_lesson') {
@@ -95,9 +105,13 @@ Please update the lesson plan according to the user's edit request above. Preser
         if (intent === 'create_lesson' || (intent === 'edit_lesson' && lessonPlanId)) {
           // Optionally enrich with web search via MCP
           let enrichedSystem = systemPrompt
-          const mcp = await createBraveSearchTools().catch(() => null)
+          const mcp = await createBraveSearchTools().catch((err) => {
+            console.error('[MCP] Failed to create search tools:', err)
+            return null
+          })
           try {
             if (mcp && Object.keys(mcp.tools).length > 0) {
+              emitStatus('brave_web_search', 'running')
               const searchResult = await generateText({
                 model: anthropic('claude-haiku-4-5'),
                 system: 'You are a research assistant. Use the available search tools to find current, relevant information about the topic the user wants to learn about. Summarize the most useful findings in 3-5 sentences.',
@@ -105,6 +119,7 @@ Please update the lesson plan according to the user's edit request above. Preser
                 tools: mcp.tools,
                 stopWhen: stepCountIs(3),
               })
+              emitStatus('brave_web_search', 'complete')
               if (searchResult.text) {
                 enrichedSystem = `${systemPrompt}\n\nRecent web search findings:\n${searchResult.text}`
               }
@@ -113,12 +128,14 @@ Please update the lesson plan according to the user's edit request above. Preser
             await mcp?.client.close().catch(() => undefined)
           }
 
+          emitStatus('generate_lesson', 'running')
           const { object: content } = await generateObject({
             model: anthropic('claude-haiku-4-5'),
             schema: LessonPlanContentSchema,
             system: enrichedSystem,
             messages: modelMessages,
           })
+          emitStatus('generate_lesson', 'complete')
 
           const title = content.sections[0]?.title ?? 'New Lesson Plan'
           const proposalId = crypto.randomUUID()
