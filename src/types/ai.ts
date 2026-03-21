@@ -15,6 +15,11 @@ export type LessonPlanDataParts = {
     mode: 'create' | 'edit'
     lessonPlanId?: string
   }
+  'tool-status': {
+    tool: string
+    status: 'running' | 'complete'
+    label: string
+  }
 }
 
 // Frontend state for a pending proposal awaiting user confirmation

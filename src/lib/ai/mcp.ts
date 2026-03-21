@@ -1,7 +1,6 @@
 import { Client } from '@modelcontextprotocol/sdk/client'
-import { tool, zodSchema } from 'ai'
+import { tool, jsonSchema } from 'ai'
 import type { ToolSet } from 'ai'
-import { z } from 'zod'
 
 export interface BraveSearchTools {
   client: Client
@@ -24,6 +23,7 @@ export interface BraveSearchTools {
  */
 export async function createBraveSearchTools(): Promise<BraveSearchTools | null> {
   if (!process.env.BRAVE_API_KEY) {
+    console.info('[MCP] BRAVE_API_KEY not set, skipping web search')
     return null
   }
 
@@ -43,20 +43,28 @@ export async function createBraveSearchTools(): Promise<BraveSearchTools | null>
   })
 
   const client = new Client({ name: 'erudex', version: '1.0.0' })
-  await client.connect(transport)
+
+  try {
+    await client.connect(transport)
+    console.info('[MCP] Connected to Brave Search server')
+  } catch (err) {
+    console.error('[MCP] Failed to connect to Brave Search server:', err)
+    throw err
+  }
 
   const { tools: mcpTools } = await client.listTools()
+  console.info(`[MCP] Discovered ${mcpTools.length} tool(s): ${mcpTools.map((t) => t.name).join(', ')}`)
 
   const tools: ToolSet = {}
   for (const mcpTool of mcpTools) {
     const toolName = mcpTool.name
     tools[toolName] = tool({
       description: mcpTool.description ?? '',
-      inputSchema: zodSchema(z.object({ query: z.string().describe('The search query') })),
-      execute: async (args: { query: string }) => {
+      inputSchema: jsonSchema(mcpTool.inputSchema as Record<string, unknown>),
+      execute: async (args: Record<string, unknown>) => {
         const result = await client.callTool({
           name: toolName,
-          arguments: args as Record<string, unknown>,
+          arguments: args,
         })
         return result.content
       },
