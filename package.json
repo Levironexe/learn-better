@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest run",
+    "lint": "next lint"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.58",
