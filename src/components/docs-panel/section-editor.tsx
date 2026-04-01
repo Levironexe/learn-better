@@ -1,9 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Pencil, Trash2 } from 'lucide-react'
+import { FormattingToolbar } from './formatting-toolbar'
+import type { ToolbarActionId } from './formatting-toolbar'
+import {
+  applyBold,
+  applyItalic,
+  applyUnderline,
+  applyH1,
+  applyH2,
+  applyH3,
+  applyUnorderedList,
+  applyOrderedList,
+  applyAlignLeft,
+  applyAlignCenter,
+  applyAlignRight,
+  applyAlignJustify,
+  applyLink,
+} from '@/lib/editor/toolbar-actions'
+import type { TransformResult } from '@/lib/editor/toolbar-actions'
 
 interface SectionEditorProps {
   planId: string
@@ -20,6 +38,7 @@ export function SectionEditor({ planId, sectionId, initialContent, onSave, onDel
   const [state, setState] = useState<EditorState>('idle')
   const [draft, setDraft] = useState(initialContent)
   const [error, setError] = useState<string | null>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const handleEdit = () => {
     setDraft(initialContent)
@@ -69,6 +88,48 @@ export function SectionEditor({ planId, sectionId, initialContent, onSave, onDel
     }
   }
 
+  const applyTransform = useCallback((result: TransformResult) => {
+    setDraft(result.newValue)
+    if (state === 'error') setState('editing')
+    // Restore selection after React re-renders the textarea value
+    requestAnimationFrame(() => {
+      textareaRef.current?.setSelectionRange(result.newSelectionStart, result.newSelectionEnd)
+      textareaRef.current?.focus()
+    })
+  }, [state])
+
+  const handleToolbarAction = useCallback((action: ToolbarActionId) => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const input = {
+      value: draft,
+      selectionStart: textarea.selectionStart,
+      selectionEnd: textarea.selectionEnd,
+    }
+
+    switch (action) {
+      case 'bold':         return applyTransform(applyBold(input))
+      case 'italic':       return applyTransform(applyItalic(input))
+      case 'underline':    return applyTransform(applyUnderline(input))
+      case 'h1':           return applyTransform(applyH1(input))
+      case 'h2':           return applyTransform(applyH2(input))
+      case 'h3':           return applyTransform(applyH3(input))
+      case 'ul':           return applyTransform(applyUnorderedList(input))
+      case 'ol':           return applyTransform(applyOrderedList(input))
+      case 'align-left':   return applyTransform(applyAlignLeft(input))
+      case 'align-center': return applyTransform(applyAlignCenter(input))
+      case 'align-right':  return applyTransform(applyAlignRight(input))
+      case 'align-justify':return applyTransform(applyAlignJustify(input))
+      case 'link': {
+        const rawUrl = window.prompt('Enter URL:') ?? ''
+        if (!rawUrl) return
+        const url = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`
+        return applyTransform(applyLink({ ...input, url }))
+      }
+    }
+  }, [draft, applyTransform])
+
   if (state === 'idle' || state === 'deleting') {
     return (
       <div className="flex items-center gap-1">
@@ -96,7 +157,7 @@ export function SectionEditor({ planId, sectionId, initialContent, onSave, onDel
   // editing / saving / error states
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background">
-      {/* Toolbar */}
+      {/* Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0">
         <span className="text-sm font-medium text-foreground">Edit section</span>
         <div className="flex items-center gap-2">
@@ -119,9 +180,13 @@ export function SectionEditor({ planId, sectionId, initialContent, onSave, onDel
         </div>
       </div>
 
+      {/* Formatting toolbar */}
+      <FormattingToolbar onAction={handleToolbarAction} />
+
       {/* Split pane */}
       <div className="flex flex-1 overflow-hidden">
         <textarea
+          ref={textareaRef}
           value={draft}
           onChange={(e) => {
             setDraft(e.target.value)
