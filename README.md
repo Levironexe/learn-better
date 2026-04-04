@@ -2,7 +2,9 @@
 
 An AI-powered learning platform that generates structured, pedagogically ordered lesson plans from natural language requests. Users chat with an AI assistant to create, revise, and navigate lesson content — all persisted to their account across devices.
 
----
+<img width="1895" height="916" alt="image" src="https://github.com/user-attachments/assets/3617a388-18f0-4beb-9a5a-b91d3f55f1da" />
+
+## What it does
 
 ## Overview
 
@@ -276,7 +278,10 @@ The project is configured for [Vercel](https://vercel.com). To deploy:
 - Tailwind CSS v4 CSS-first config — add custom design tokens in `src/app/globals.css`, not a JS config file
 - All auth checks follow the same pattern: get Supabase user from the server client, return `401` immediately if absent
 
----
+**THIS IS A FOR-FUN PROJECT** — not production software. The entire thing was designed and implemented using [Spec Kit](https://github.com/spec-kit/specify), an AI-powered specification-driven development workflow. Each feature went through the full cycle: `/speckit.specify` -> `/speckit.plan` -> `/speckit.tasks` -> `/speckit.implement`. You can find all the specs, plans, and task breakdowns in the `specs/` directory.
+
+Here is an overview of Spec Kit usage in my project:
+<img width="800" height="429" alt="image" src="https://github.com/user-attachments/assets/be457369-4432-4144-9188-d77cf6b0855a" />
 
 ## License
 
